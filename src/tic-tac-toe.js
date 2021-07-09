@@ -15,7 +15,7 @@ class TicTacToe {
       if (currentVal != null) {
           return;
       }
-      this.matrix[rowIndex][columnIndex] = this.getCurrentPlayerSymbol();
+      this.arr[rowIndex][columnIndex] = this.getCurrentPlayerSymbol();
       this.addScore(rowIndex, columnIndex, this.getCurrentPlayerSymbol() === 'x' ? 1 : -1);
       this.changePlayer();
   }
@@ -35,9 +35,9 @@ class TicTacToe {
   }
 
   noMoreTurns() {
-      for (let i = 0; i < this.matrix.length; i++) {
-          for (let j = 0; j < this.matrix[i].length; j++) {
-              if (this.matrix[i][j] == null) {
+      for (let i = 0; i < this.arr.length; i++) {
+          for (let j = 0; j < this.arr[i].length; j++) {
+              if (this.arr[i][j] == null) {
                   return false;
               }
           }
@@ -50,7 +50,7 @@ class TicTacToe {
   }
 
   getFieldValue(rowIndex, colIndex) {
-      return this.matrix[rowIndex][colIndex];
+      return this.arr[rowIndex][colIndex];
   }
   changePlayer() {
       this.currentPlayer = this.getCurrentPlayerSymbol() === 'x' ? 'o' : 'x';
