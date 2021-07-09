@@ -1,69 +1,43 @@
 class TicTacToe {
-  constructor() {
-      this.matrix = [
-          [null, null, null],
-          [null, null, null],
-          [null, null, null]
-      ];
-      this.currentPlayerSymbol = 'x';
-  }
 
-  switchPlayer() {
-      if (this.currPlayer === 'x') {
-          this.currPlayer = 'o';
-      } else if (this.currPlayer === 'o') {
-          this.currPlayer = 'x';
-      }
+  constructor() {
+      this.currentPlayer = 'x';
+      this.arr= TicTacToe.createMatrix(3, 3, null);
+      this.gridScore = TicTacToe.createMatrix(2 * 3 + 2, 1, 0);
   }
 
   getCurrentPlayerSymbol() {
-      return this.currPlayer;
+      return this.currentPlayer;
   }
 
   nextTurn(rowIndex, columnIndex) {
-      if (this.matrix[rowIndex][columnIndex] === null) {
-          this.matrix[rowIndex][columnIndex] = this.currPlayer;
-          this.switchPlayer();
-      } 
+      let currentVal = this.getFieldValue(rowIndex, columnIndex);
+      if (currentVal != null) {
+          return;
+      }
+      this.matrix[rowIndex][columnIndex] = this.getCurrentPlayerSymbol();
+      this.addScore(rowIndex, columnIndex, this.getCurrentPlayerSymbol() === 'x' ? 1 : -1);
+      this.changePlayer();
   }
 
   isFinished() {
-      if ((this.getWinner() === 'x') ||
-          (this.getWinner() === 'o') ||
-          (this.noMoreTurns() === true)) {
-          return true;
-      }
-      return false;
+      return this.getWinner() != null || this.isDraw();
   }
 
   getWinner() {
-      let winner = null;
-
-      if (this.matrix[0][0] === 'o' && this.matrix[1][1] === 'o' && this.matrix[2][2] === 'o') { winner = 'o'; }
-      if (this.matrix[2][0] === 'o' && this.matrix[1][1] === 'o' && this.matrix[0][2] === 'o') { winner = 'o'; }
-      if (this.matrix[0][0] === 'o' && this.matrix[0][1] === 'o' && this.matrix[0][2] === 'o') { winner = 'o'; }
-      if (this.matrix[0][0] === 'o' && this.matrix[1][0] === 'o' && this.matrix[2][0] === 'o') { winner = 'o'; }
-      if (this.matrix[0][1] === 'o' && this.matrix[1][1] === 'o' && this.matrix[2][1] === 'o') { winner = 'o'; }
-      if (this.matrix[0][2] === 'o' && this.matrix[1][2] === 'o' && this.matrix[2][2] === 'o') { winner = 'o'; }
-      if (this.matrix[2][0] === 'o' && this.matrix[2][1] === 'o' && this.matrix[2][2] === 'o') { winner = 'o'; }
-      if (this.matrix[1][0] === 'o' && this.matrix[1][1] === 'o' && this.matrix[1][2] === 'o') { winner = 'o'; }
-
-      if (this.matrix[2][0] === 'x' && this.matrix[1][1] === 'x' && this.matrix[0][2] === 'x') { winner = 'x'; }
-      if (this.matrix[0][0] === 'x' && this.matrix[0][1] === 'x' && this.matrix[0][2] === 'x') { winner = 'x'; }
-      if (this.matrix[0][0] === 'x' && this.matrix[1][1] === 'x' && this.matrix[2][2] === 'x') { winner = 'x'; }
-      if (this.matrix[0][0] === 'x' && this.matrix[1][0] === 'x' && this.matrix[2][0] === 'x') { winner = 'x'; }
-      if (this.matrix[0][1] === 'x' && this.matrix[1][1] === 'x' && this.matrix[2][1] === 'x') { winner = 'x'; }
-      if (this.matrix[0][2] === 'x' && this.matrix[1][2] === 'x' && this.matrix[2][2] === 'x') { winner = 'x'; }
-      if (this.matrix[2][0] === 'x' && this.matrix[2][1] === 'x' && this.matrix[2][2] === 'x') { winner = 'x'; }
-      if (this.matrix[1][0] === 'x' && this.matrix[1][1] === 'x' && this.matrix[1][2] === 'x') { winner = 'x'; }
-
-      return winner;
+      for (let i = 0; i < this.gridScore.length; i++) {
+          let scoreItem = this.gridScore[i];
+          if (Math.abs(scoreItem) === 3) {
+              return scoreItem > 0 ? 'x' : 'o';
+          }
+      }
+      return null;
   }
 
   noMoreTurns() {
       for (let i = 0; i < this.matrix.length; i++) {
           for (let j = 0; j < this.matrix[i].length; j++) {
-              if (this.matrix[i][j] === null) {
+              if (this.matrix[i][j] == null) {
                   return false;
               }
           }
@@ -72,15 +46,36 @@ class TicTacToe {
   }
 
   isDraw() {
-      if ((this.noMoreTurns() === true) &&
-          (this.getWinner() === null)) {
-          return true;
-      }
-      return false;
+      return this.getWinner() == null && this.noMoreTurns();
   }
 
   getFieldValue(rowIndex, colIndex) {
       return this.matrix[rowIndex][colIndex];
+  }
+  changePlayer() {
+      this.currentPlayer = this.getCurrentPlayerSymbol() === 'x' ? 'o' : 'x';
+  }
+  addScore(row, col, point) {
+      this.gridScore[row][0] += point;
+      this.gridScore[3 + col][0] += point;
+      if (row == col) {
+          this.gridScore[2 * 3][0] += point;
+      }
+      if (3 - 1 - col == row) {
+          this.gridScore[2 * 3 + 1][0] += point;
+      }
+  }
+
+  static createMatrix(rows, cols, initialValue) {
+      let rowArr = [];
+      for (let i = 0; i < rows; i++) {
+          let colArr = [];
+          for (let j = 0; j < cols; j++) {
+              colArr[j] = initialValue;
+          }
+          rowArr[i] = colArr;
+      }
+      return rowArr;
   }
 }
 
